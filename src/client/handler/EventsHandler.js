@@ -18,7 +18,7 @@ class EventsHandler {
 
     load = () => {
         let total = 0;
-
+        let errorCount = 0; 
         for (const directory of readdirSync('./src/events/')) {
             for (const file of readdirSync('./src/events/' + directory).filter((f) => f.endsWith('.js'))) {
                 try {
@@ -41,19 +41,21 @@ class EventsHandler {
                             this.client.on(module.event, (...args) => module.run(this.client, ...args));
                         }
 
-                        info(`Loaded new event: ` + file);
+                        info(`Loaded file event: ` + file);
 
                         total++;
                     } else {
+                        errorCount += 1;  
                         error('Invalid event type ' + module.__type__ + ' from event file ' + file);
                     }
                 } catch (err) {
-                    error('Unable to load a event from the path: ' + 'src/events/' + directory + '/' + file);
+                    errorCount += 1; 
+                    error('Unable to load a event from the path: ' + 'src/events/' + directory + '/' + file + ' Error given was: ' + err);
                 }
             }
         }
 
-        success(`Successfully loaded ${total} events.`);
+        success(`Successfully loaded ${total} events. with ${errorCount} Errors`);
     }
 }
 
